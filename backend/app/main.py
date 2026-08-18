@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import logging
 import os
 from contextlib import asynccontextmanager
 from typing import Any
@@ -14,26 +15,31 @@ from app.pipeline.orchestrator import PipelineOrchestrator
 from app.pipeline.models import ForgeJob, JobStatus, StageName
 from app.store import job_store
 
+logging.basicConfig(level=os.getenv("LOG_LEVEL", "INFO"))
+logger = logging.getLogger("forge")
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Startup: warm connections, ensure dirs
     job_store.init()
+    logger.info("FORGE backend started — pipeline workers ready")
     yield
-    # Shutdown
     job_store.close()
 
 
 app = FastAPI(
     title="FORGE API",
     description="YouTube URL → Deployed Software",
-    version="0.1.0",
+    version="0.2.0",
     lifespan=lifespan,
 )
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=os.getenv("CORS_ORIGINS", "http://localhost:3000,https://forge-n3oc73sh8-garv1.vercel.app").split(","),
+    allow_origins=os.getenv(
+        "CORS_ORIGINS",
+        "http://localhost:3000,https://forge-n3oc73sh8-garv1.vercel.app,https://forge-git-main-garv1.vercel.app,https://forge-garv1.vercel.app",
+    ).split(","),
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -55,8 +61,9 @@ async def health():
     return {
         "status": "ok",
         "service": "forge-backend",
-        "version": "0.1.0",
+        "version": "0.2.0",
         "pipeline_ready": True,
+        "stages": [s.value for s in StageName],
     }
 
 
@@ -66,6 +73,7 @@ async def process_youtube(req: ProcessRequest, bg: BackgroundTasks):
     job = job_store.create_job(str(req.youtube_url), req.options)
     orchestrator = PipelineOrchestrator(job.id)
     bg.add_task(orchestrator.run)
+    logger.info("Queued job %s for %s", job.id, req.youtube_url)
     return ProcessResponse(project_id=job.id, status=job.status)
 
 
@@ -87,4 +95,5 @@ async def get_stages(project_id: str):
 
 if __name__ == "__main__":
     import uvicorn
+
     uvicorn.run("app.main:app", host="0.0.0.0", port=8000, reload=True)
