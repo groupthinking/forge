@@ -4,43 +4,46 @@
 
 YouTube tutorial / demo → fully deployed web application in minutes.
 
+## 🚀 Live Demo
+
+**https://forge-n3oc73sh8-garv1.vercel.app**  
+(also: https://forge-git-main-garv1.vercel.app)
+
 ## Status
 
-This is the production monorepo for FORGE (v0.1).
+v0.1 — Frontend complete and deployed.
 
-- Frontend dashboard (matching the design system)
-- Pipeline UI with live progress cards
-- Ready for Vercel deploy
-- Backend workers & AI pipeline coming next
+- ✅ Dashboard UI matching the design system & video
+- ✅ Live progress cards with simulated pipeline
+- ✅ Toast + result state
+- ⏳ Backend workers + real AI pipeline next
 
 ## Quick Start
 
 ```bash
+git clone https://github.com/groupthinking/forge.git
+cd forge
 npm install
 npm run dev
 ```
 
 Open http://localhost:3000
 
-## Deploy
+## Architecture & Spec
 
-Already linked / ready for Vercel. Or:
-
-```bash
-npx vercel
-```
-
-## Architecture
-
-See the full spec: [forge-spec](https://github.com/groupthinking/forge-spec) and the Notion page.
+Full product + technical spec:  
+- GitHub: [forge-spec](https://github.com/groupthinking/forge-spec)  
+- Notion: [FORGE Full Product Spec](https://app.notion.com/p/3c03c2339c04810ca653c470d70ea332)
 
 ## Stack
 
-- Next.js 15 (App Router)
-- Tailwind CSS + shadcn-style components
+- Next.js 15.5 (App Router)
+- React 19 + Framer Motion
+- Tailwind CSS
 - TypeScript
-- Ready for Clerk / Auth.js, Redis, Grok API, etc.
+- Deployed on Vercel
 
 ---
 
-Built by Grok + you.
+Built by Grok + you.  
+Repo: https://github.com/groupthinking/forge
